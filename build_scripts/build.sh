@@ -115,6 +115,24 @@ if [ "$1" = "DBG" ]; then
   echo "Building kernel in this window with a pause at the end to check build errors"
   echo "Running in $3 mode"
   echo
+  cd $2/source
+  #force recompile of sync and cpufreq
+  rm arch/arm/mach-exynos/cpufreq-4x12.o -f >/dev/null
+  rm fs/sync.o -f >/dev/null
+  if [ "$1" = "EX" ]; then
+    export OC_EIGHTEEN=true
+  fi
+  if [ "$1" = "OC" ]; then
+    export OC_EIGHTEEN=true
+  fi
+  if [ "$1" = "STD" ]; then
+    export OC_EIGHTEEN=false
+  fi
+  if [ "$1" = "EX" ]; then
+    export FSYNC_OFF=true
+  else
+    export FSYNC_OFF=false
+  fi
   cd $2/source >/dev/null
   make
   echo
@@ -163,24 +181,29 @@ echo "Moving to source directory $2/source"
 echo
 
 cd $2/source >/dev/null
+
+#force recompile of sync and cpufreq
+rm arch/arm/mach-exynos/cpufreq-4x12.o -f >/dev/null
+rm fs/sync.o -f >/dev/null
+
 echo -n "Set CPU frequency table to $1					"
 if [ "$1" = "EX" ]; then
-    export OC_EIGHTEEN=y
+    export OC_EIGHTEEN=true
 fi
 if [ "$1" = "OC" ]; then
-    export OC_EIGHTEEN=y
+    export OC_EIGHTEEN=true
 fi
 if [ "$1" = "STD" ]; then
-    export OC_EIGHTEEN=n
+    export OC_EIGHTEEN=false
 fi
 echo "done"
 
 if [ "$1" = "EX" ]; then
     echo "Fsync() filesystem function					disabled"
-    export FSYNC_OFF=y
+    export FSYNC_OFF=true
 else
     echo "Fsync() filesystem function				 	enabled"
-    export FSYNC_OFF=n
+    export FSYNC_OFF=false
 fi
 
 echo -n "Create a working copy of the initramfs				"
