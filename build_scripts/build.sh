@@ -96,15 +96,15 @@ if [ "$1" = "XC" ]; then
   echo Launching xconfig.....
   make xconfig -silent >/dev/null
   if [ "$3" = "LTE" ]; then
-    rm .config_lte -f
+    rm .config_LTE_* -f
     rm $2/modified_source_files/arch/arm/configs/note2core_lte_defconfig -f
-    cp .config .config_lte
+    cp .config .config_LTE_EX
     cp .config $2/modified_source_files/arch/arm/configs/note2core_lte_defconfig
   fi
   if [ "$3" = "NORMAL" ]; then
-    rm .config_normal -f
+    rm .config_NORMAL_* -f
     rm $2/modified_source_files/arch/arm/configs/note2core_defconfig -f
-    cp .config .config_normal
+    cp .config .config_NORMAL_EX
     cp .config $2/modified_source_files/arch/arm/configs/note2core_defconfig
   fi
   exit
@@ -117,22 +117,6 @@ if [ "$1" = "DBG" ]; then
   echo
   cd $2/source
   #force recompile of sync and cpufreq
-  rm arch/arm/mach-exynos/cpufreq-4x12.o -f >/dev/null
-  rm fs/sync.o -f >/dev/null
-  if [ "$1" = "EX" ]; then
-    export OC_EIGHTEEN=true
-  fi
-  if [ "$1" = "OC" ]; then
-    export OC_EIGHTEEN=true
-  fi
-  if [ "$1" = "STD" ]; then
-    export OC_EIGHTEEN=false
-  fi
-  if [ "$1" = "EX" ]; then
-    export FSYNC_OFF=true
-  else
-    export FSYNC_OFF=false
-  fi
   cd $2/source >/dev/null
   make
   echo
@@ -186,25 +170,18 @@ cd $2/source >/dev/null
 rm arch/arm/mach-exynos/cpufreq-4x12.o -f >/dev/null
 rm fs/sync.o -f >/dev/null
 
-echo -n "Set CPU frequency table to $1					"
-if [ "$1" = "EX" ]; then
-    export OC_EIGHTEEN=true
-fi
-if [ "$1" = "OC" ]; then
-    export OC_EIGHTEEN=true
-fi
-if [ "$1" = "STD" ]; then
-    export OC_EIGHTEEN=false
-fi
-echo "done"
+echo "Set CPU frequency table to $1					done"
 
 if [ "$1" = "EX" ]; then
     echo "Fsync() filesystem function					disabled"
-    export FSYNC_OFF=true
 else
     echo "Fsync() filesystem function				 	enabled"
-    export FSYNC_OFF=false
 fi
+
+#flip to the correct .config
+rm .config -f >/dev/null
+cp .config_$3_$1 .config >/dev/null
+echo "Using .config_$3_$1						done"
 
 echo -n "Create a working copy of the initramfs				"
 # Copy a working copy of the initramfs

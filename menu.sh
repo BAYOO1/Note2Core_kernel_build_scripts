@@ -59,7 +59,7 @@ while true; do
 	
 
 	[Cc]* ) $PLACE/build_scripts/build.sh MC $PLACE;;
-	[Ff]* ) if [ "$MODE" = "NORMAL" ]; then MODE="LTE" ;else MODE="NORMAL"; fi; $PLACE/build_scripts/flip.sh EX $PLACE $MODE;;
+	[Ff]* ) if [ "$MODE" = "NORMAL" ]; then MODE="LTE" ;else MODE="NORMAL"; fi;;
 	[Vv]* ) $PLACE/build_scripts/ver.sh $PLACE $VER;;
         [Qq]* ) exit;;
         * ) echo "Please answer d,p,x,o,s,d,m or q.";;
