@@ -6,7 +6,9 @@ clear
 
 # $2 = auto generated directory location for all files in the kitchen, generated from menu.sh
 
+# $3 = normal / lte mode passed from menu,sh
 
+# $4 is version string passed from menu,sh
 
 # MAKE CLEAN the source, then exit
 if [ "$1" = "MC" ]; then
@@ -115,8 +117,6 @@ if [ "$1" = "DBG" ]; then
   echo "Building kernel in this window with a pause at the end to check build errors"
   echo "Running in $3 mode"
   echo
-  cd $2/source
-  #force recompile of sync and cpufreq
   cd $2/source >/dev/null
   make
   echo
@@ -147,16 +147,16 @@ echo
 rm $2/zImage -f  >/dev/null
 
 if [ "$3" = "NORMAL" ]; then
-rm $2/output/kernel_out_$1/7100/*.tar -f >/dev/null >/dev/null
-rm $2/output/kernel_out_$1/7100/*.zip -f >/dev/null >/dev/null
-rm $2/output/kernel_out_$1/7100/*.img -f >/dev/null >/dev/null
+rm $2/output/kernel_out_$1/7100/*.tar -f >/dev/null 
+rm $2/output/kernel_out_$1/7100/*.zip -f >/dev/null 
+rm $2/output/kernel_out_$1/7100/*.img -f >/dev/null 
 rm -rf $2/ramdiscs/initramfs  >/dev/null
 fi
 
 if [ "$3" = "LTE" ]; then
-rm $2/output/kernel_out_$1/7105/*.tar -f >/dev/null >/dev/null
-rm $2/output/kernel_out_$1/7105/*.zip -f >/dev/null >/dev/null
-rm $2/output/kernel_out_$1/7105/*.img -f >/dev/null >/dev/null
+rm $2/output/kernel_out_$1/7105/*.tar -f >/dev/null
+rm $2/output/kernel_out_$1/7105/*.zip -f >/dev/null
+rm $2/output/kernel_out_$1/7105/*.img -f >/dev/null
 rm -rf $2/ramdiscs/initramfs5  >/dev/null
 fi
 
@@ -165,10 +165,6 @@ echo "Moving to source directory $2/source"
 echo
 
 cd $2/source >/dev/null
-
-#force recompile of sync and cpufreq
-rm arch/arm/mach-exynos/cpufreq-4x12.o -f >/dev/null
-rm fs/sync.o -f >/dev/null
 
 echo "Set CPU frequency table to $1					done"
 
@@ -240,7 +236,7 @@ cd $2/source  >/dev/null
 nice -n 10 make -j2 zImage >/dev/null
 echo "done"
 
-#create the boot.img with the zImage and initramfs ramdisk cpio archive
+# Create the boot.img with the zImage and initramfs ramdisk cpio archive
 echo -n "Create the boot.img						"
 cp $2/source/arch/arm/boot/zImage $2/zImage  >/dev/null
 if [ "$3" = "NORMAL" ]; then
