@@ -24,6 +24,8 @@ into the original folder (KBUILD), so it looks like this
 >>output
 >>menu.sh
 
+and delete the now empty folder from the git clone
+
 --------------------------------------------------------------------------------------------
 Stage 2)
 
