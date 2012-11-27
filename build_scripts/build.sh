@@ -10,6 +10,8 @@ clear
 
 # $4 is version string passed from menu,sh
 
+
+
 # MAKE CLEAN the source, then exit
 if [ "$1" = "MC" ]; then
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -39,6 +41,10 @@ if [ "$1" = "DF" ]; then
   cd $2/source >/dev/null
   echo "Creating t0_04_defconfig"
   make t0_04_defconfig
+  rm .config_LTE -f
+  rm .config_NORMAL -f
+  cp .config .config_NORMAL
+  cp .config .config_LTE
   echo
   echo "Done"
   sleep 3
@@ -58,6 +64,8 @@ if [ "$1" = "HC" ]; then
   cd $2/source >/dev/null
   echo Creating Note2Core_defconfig
   make note2core_defconfig
+  rm .config_NORMAL -f
+  cp .config .config_NORMAL
   echo
   echo "Done"
   sleep 3
@@ -77,6 +85,8 @@ if [ "$1" = "LT" ]; then
   cd $2/source >/dev/null
   echo Creating Note2Core_LTE_defconfig
   make note2core_lte_defconfig
+  rm .config_LTE -f
+  cp .config .config_LTE
   echo
   echo "Done"
   sleep 3
@@ -96,17 +106,22 @@ if [ "$1" = "XC" ]; then
   cd $2/source >/dev/null
   echo
   echo Launching xconfig.....
-  make xconfig -silent >/dev/null
   if [ "$3" = "LTE" ]; then
-    rm .config_LTE_* -f
+    rm .config -f
+    cp .config_LTE .config
+    rm .config_LTE -f
     rm $2/modified_source_files/arch/arm/configs/note2core_lte_defconfig -f
-    cp .config .config_LTE_EX
+    make xconfig -silent >/dev/null
+    cp .config .config_LTE
     cp .config $2/modified_source_files/arch/arm/configs/note2core_lte_defconfig
   fi
   if [ "$3" = "NORMAL" ]; then
-    rm .config_NORMAL_* -f
+    rm .config -f
+    cp .config_NORMAL .config
+    rm .config_NORMAL
     rm $2/modified_source_files/arch/arm/configs/note2core_defconfig -f
-    cp .config .config_NORMAL_EX
+    make xconfig -silent >/dev/null
+    cp .config .config_NORMAL
     cp .config $2/modified_source_files/arch/arm/configs/note2core_defconfig
   fi
   exit
@@ -163,24 +178,36 @@ fi
 # Move to the source directory
 echo "Moving to source directory $2/source"
 echo
-
 cd $2/source >/dev/null
 
-echo "Set CPU frequency table to $1					done"
+#flip to the correct .config NORMAL or LTE
+rm .config -f
+cp .config_$3 .config
+echo "Using config							$3"
 
+# set fsync and 1.8ghz conditions in the .config depending on what kernel has been selected
+# to build.  We replace the lines in the .config using "sed" as they cannot be set using
+# the "export" command
+echo -n "Set Fsync function						"
 if [ "$1" = "EX" ]; then
-    echo "Fsync() filesystem function					disabled"
+    sed -ir 's/.*CONFIG_FSYNC_OFF.*/CONFIG_FSYNC_OFF=y/g' .config
+    echo "Disabled"
 else
-    echo "Fsync() filesystem function				 	enabled"
+    sed -ir 's/.*CONFIG_FSYNC_OFF.*/CONFIG_FSYNC_OFF=n/g' .config
+    echo "Enabled"
 fi
 
-#flip to the correct .config
-rm .config -f >/dev/null
-cp .config_$3_$1 .config >/dev/null
-echo "Using .config_$3_$1						done"
+echo -n "Set 1.8ghz							"
+if [ "$1" = "EX" -o "$1" = "OC" ]; then
+    sed -ir 's/.*CONFIG_OC_EIGHTEEN.*/CONFIG_OC_EIGHTEEN=y/g' .config
+    echo "Enabled"
+else
+    sed -ir 's/.*CONFIG_OC_EIGHTEEN.*/CONFIG_OC_EIGHTEEN=n/g' .config
+    echo "Disabled"
+fi
 
+# Create a working copy of the initramfs
 echo -n "Create a working copy of the initramfs				"
-# Copy a working copy of the initramfs
 mkdir -p $2/ramdiscs/initramfs >/dev/null
 rm -rf $2/ramdiscs/initramfs/*  >/dev/null
 mkdir -p $2/ramdiscs/initramfs5 >/dev/null
@@ -196,10 +223,10 @@ echo "done"
 # also set custom kernel version string
 export USE_SEC_FIPS_MODE=true
 if [ "$3" = "NORMAL" ]; then
-  export LOCALVERSION="-Note2Core-v'$4'_'$1'"
+  export LOCALVERSION="-Note2Core-v'$4'_'$1'" #eg -Note2Core_v1.05_EX
 fi
 if [ "$3" = "LTE" ]; then
-  export LOCALVERSION="-Note2Core-v'$4'_'$1'_'$3'"
+  export LOCALVERSION="-Note2Core-v'$4'_'$1'_'$3'" #eg -Note2Core_v1.05_EX_LTE
 fi
 
 # Run the compile
@@ -213,7 +240,7 @@ echo
 find -name '*.ko' -exec cp -av {} $2/ramdiscs/initramfs/lib/modules/ \;  >/dev/null
 find -name '*.ko' -exec cp -av {} $2/ramdiscs/initramfs5/lib/modules/ \;  >/dev/null
 
-
+# build the initramfs .cpio's
 if [ "$3" = "NORMAL" ]; then
   cd $2/ramdiscs/initramfs
   find | fakeroot cpio -H newc -o > $2/ramdiscs/initramfs/initramfs.cpio
@@ -231,6 +258,7 @@ if [ "$3" = "LTE" ]; then
 fi
 echo
 
+# Recompile just the zImage
 echo -n "Re-Compiling zImage						"
 cd $2/source  >/dev/null
 nice -n 10 make -j2 zImage >/dev/null
