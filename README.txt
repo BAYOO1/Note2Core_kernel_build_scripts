@@ -4,7 +4,7 @@ First, you need a linux computer (or a linux VM), with "git", "g++" and "libncur
 Secondly, you need a cross compiler toolchain.  The standard Google NDK 4.4.3 GCC is recommended
 
 
-Now, firstly you need to "git clone" a number of repositories from github, and lkay them out in the
+Now, firstly you need to "git clone" a number of repositories from github, and lay them out in the
 following process
 
 --------------------------------------------------------------------------------------------
