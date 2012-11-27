@@ -1,11 +1,8 @@
 #!/bin/sh
 
-#create working directory variable - automatic - will detect whatever directory you extract the
-#source package too
+#create working directory variable - automatic - will detect whatever directory you are currently in
 PLACE=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 MODE="NORMAL"
-
-$PLACE/build_scripts/flip.sh EX $PLACE $MODE
 VER=$(head -n 1 $PLACE/build_scripts/version.txt)
 
 
@@ -14,7 +11,7 @@ while true; do
     VER=$(head -n 1 $PLACE/build_scripts/version.txt)
     clear
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-    echo "~~~Note2Core kernel Autobuilder v6.2~~~"
+    echo "~~~Note2Core kernel Autobuilder v6.3~~~"
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     echo "Build version v$VER"
     echo "Operational mode for compile - $MODE"
@@ -26,18 +23,17 @@ while true; do
     echo "  D			Create the standard t0_04_defconfig"
     echo "  N			Create the Note2Core defconfig"
     echo "  L			Create the Note2Core LTE defconfig"
+    echo
     echo "  X			Configure your kernel with xconfig"
+    echo "  V			Change kernel build version"
+    echo "  F			Flip compile mode between NORMAL and LTE"
     echo
     echo "  S			Compile STD kernel 		(1.6ghz fsync on) $MODE"
     echo "  O			Compile OC kernel 		(1.8ghz fsync on) $MODE"
     echo "  E			Compile EX kernel		(1.8ghz fsync off) $MODE"
     echo "  B			Bug-finding compile"
     echo
-    echo "  C			Make Clean the source "
-    echo
-    echo 
-    echo "  F			Flip compile mode between NORMAL and LTE"
-    echo "  V			Change kernel version number"
+    echo "  C			Make Clean and mrproper the /source "
     echo
     echo "  Q			Quit"
     echo
@@ -51,13 +47,10 @@ while true; do
 	[Nn]* ) $PLACE/build_scripts/build.sh HC $PLACE;;
 	[Ll]* ) $PLACE/build_scripts/build.sh LT $PLACE;;
 	[Xx]* ) $PLACE/build_scripts/build.sh XC $PLACE $MODE;;
-	
 	[Ss]* ) $PLACE/build_scripts/build.sh STD $PLACE $MODE $VER;;
 	[Oo]* ) $PLACE/build_scripts/build.sh OC $PLACE $MODE $VER;;
 	[Ee]* ) $PLACE/build_scripts/build.sh EX $PLACE $MODE $VER;;
 	[Bb]* ) $PLACE/build_scripts/build.sh DBG $PLACE $MODE;;
-	
-
 	[Cc]* ) $PLACE/build_scripts/build.sh MC $PLACE;;
 	[Ff]* ) if [ "$MODE" = "NORMAL" ]; then MODE="LTE" ;else MODE="NORMAL"; fi;;
 	[Vv]* ) $PLACE/build_scripts/ver.sh $PLACE $VER;;
