@@ -17,7 +17,7 @@ while true; do
     NAME=$(head -n 1 $PLACE/build_scripts/name.txt)
     clear
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-    echo "~~~~$NAME kernel Autobuilder v7~~~~"
+    echo "~~~$NAME kernel Autobuilder v7.1~~~"
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     echo "Build version v$VER"
     echo "Kernel Name $NAME"
@@ -28,8 +28,8 @@ while true; do
     echo "OPTION			FUNCTION"
     echo
     echo "  D			Create the standard t0_04_defconfig"
-    echo "  N			Create the Note2Core defconfig"
-    echo "  L			Create the Note2Core LTE defconfig"
+    echo "  N			Create the $NAME defconfig"
+    echo "  L			Create the $NAME LTE defconfig"
     echo
     echo "  X			Configure your kernel with xconfig"
     echo "  V			Change kernel build version"
