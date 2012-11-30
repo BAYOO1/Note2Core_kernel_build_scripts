@@ -18,9 +18,5 @@ rm name.txt -f
 #write new version.txt file with new version number
 echo $newv > name.txt
 
-#change the defconfig file names
-cd $1/arch/arm/configs
-cp $NAME_defconfig $newv_defconfig
-cp $NAME_lte_defconfig $newv_lte_defconfig
-rm $NAME_defconfig -f
-rm $NAME_lte_defconfig -f
+#call config name change script
+$1/build_scripts/configs.sh $1 $NAME $newv
