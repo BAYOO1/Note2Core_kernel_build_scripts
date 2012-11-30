@@ -239,9 +239,9 @@ fi
 # also set custom kernel version string
 export USE_SEC_FIPS_MODE=true
 if [ "$3" = "NORMAL" ]; then
-  export LOCALVERSION="-$5-v'$4'_'$1'" #eg -$5_v1.05_EX
+  export LOCALVERSION="-'$5'-v'$4'_'$1'" #eg -$5_v1.05_EX
 else #lte
-  export LOCALVERSION="-$5-v'$4'_'$1'_'$3'" #eg -$5_v1.05_EX_LTE
+  export LOCALVERSION="-'$5'-v'$4'_'$1'_'$3'" #eg -$5_v1.05_EX_LTE
 fi
 
 # Run the compile
