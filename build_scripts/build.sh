@@ -198,23 +198,34 @@ if [ "$1" = "EX" -o "$1" = "AS" ]; then
     sed -ir 's/.*CONFIG_FSYNC_OFF.*/CONFIG_FSYNC_OFF=y/g' .config
     echo "Disabled"
 else #OC or STD
-    sed -ir 's/.*CONFIG_FSYNC_OFF.*/CONFIG_FSYNC_OFF=n/g' .config
+    sed -ir 's/.*CONFIG_FSYNC_OFF.*/# CONFIG_FSYNC_OFF is not set/g' .config
     echo "Enabled"
 fi
 
 echo -n "Set MAX CPU							"
 if [ "$1" = "EX" -o "$1" = "OC" -o "$1" = "AS" ]; then
-    sed -ir 's/.*CONFIG_OC_EIGHTEEN.*/CONFIG_OC_EIGHTEEN=y/g' .config
-    #are we also building 1.9ghz kernel?
-    if [ "$1" = "AS" ]; then
-	sed -ir 's/.*CONFIG_OC_NINETEEN.*/CONFIG_OC_NINETEEN=y/g' .config
-	echo "1.9ghz"
-    else
-	sed -ir 's/.*CONFIG_OC_NINETEEN.*/CONFIG_OC_NINETEEN=n/g' .config
+    if [ "$1" = "OC" ]; then
+	sed -ir 's/.*CONFIG_OC_EIGHTEEN.*/CONFIG_OC_EIGHTEEN=y/g' .config
+	sed -ir 's/.*CONFIG_OC_NINETEEN.*/# CONFIG_OC_NINETEEN is not set/g' .config
+	sed -ir 's/.*CONFIG_OC_SIXTEEN.*/# CONFIG_OC_SIXTEEN is not set/g' .config
 	echo "1.8ghz"
     fi
+    if [ "$1" = "EX" ]; then
+	sed -ir 's/.*CONFIG_OC_EIGHTEEN.*/CONFIG_OC_EIGHTEEN=y/g' .config
+	sed -ir 's/.*CONFIG_OC_NINETEEN.*/# CONFIG_OC_NINETEEN is not set/g' .config
+	sed -ir 's/.*CONFIG_OC_SIXTEEN.*/# CONFIG_OC_SIXTEEN is not set/g' .config
+	echo "1.8ghz"
+    fi
+    if [ "$1" = "AS" ]; then
+	sed -ir 's/.*CONFIG_OC_NINETEEN.*/CONFIG_OC_NINETEEN=y/g' .config
+	sed -ir 's/.*CONFIG_OC_EIGHTEEN.*/# CONFIG_OC_EIGHTEEN is not set/g' .config
+	sed -ir 's/.*CONFIG_OC_SIXTEEN.*/# CONFIG_OC_SIXTEEN is not set/g' .config
+	echo "1.9ghz"
+    fi
 else #STD
-    sed -ir 's/.*CONFIG_OC_EIGHTEEN.*/CONFIG_OC_EIGHTEEN=n/g' .config
+    sed -ir 's/.*CONFIG_OC_EIGHTEEN.*/# CONFIG_OC_EIGHTEEN is not set/g' .config
+    sed -ir 's/.*CONFIG_OC_NINETEEN.*/# CONFIG_OC_NINETEEN is not set/g' .config
+    sed -ir 's/.*CONFIG_OC_SIXTEEN.*/CONFIG_OC_SIXTEEN=y/g' .config
     echo "1.6ghz"
 fi
 
