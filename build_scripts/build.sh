@@ -10,6 +10,8 @@ clear
 
 # $4 is version string passed from menu,sh
 
+# $5 is kernel name string passed from menu.sh
+
 
 
 # MAKE CLEAN the source, then exit to menu
@@ -54,7 +56,7 @@ fi
 # Running defconfig to create the default kernel configuration, then exit to menu
 if [ "$1" = "HC" ]; then
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  echo ~~~~~~~~~~~~~~~RUNNING NOTE2CORE CONFIG~~~~~~~~~~~~~~~
+  echo ~~~~~~~~~~~~~~~RUNNING $5 CONFIG~~~~~~~~~~~~~~~
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   echo
   echo "Running in $3 mode"
@@ -62,8 +64,8 @@ if [ "$1" = "HC" ]; then
   echo "Moving to source directory $2/source"
   echo
   cd $2/source >/dev/null
-  echo Creating Note2Core_defconfig
-  make note2core_defconfig
+  echo Creating $5_defconfig
+  make $5_defconfig
   rm .config_NORMAL -f
   cp .config .config_NORMAL
   echo
@@ -75,7 +77,7 @@ fi
 # Running defconfig to create the default LTE kernel configuration, then exit to menu
 if [ "$1" = "LT" ]; then
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  echo ~~~~~~~~~~~~~RUNNING NOTE2CORE LTE CONFIG~~~~~~~~~~~~~
+  echo ~~~~~~~~~~~~~RUNNING $5 LTE CONFIG~~~~~~~~~~~~~
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   echo
   echo "Running in $3 mode"
@@ -83,8 +85,8 @@ if [ "$1" = "LT" ]; then
   echo "Moving to source directory $2/source"
   echo
   cd $2/source >/dev/null
-  echo Creating Note2Core_LTE_defconfig
-  make note2core_lte_defconfig
+  echo Creating $5_LTE_defconfig
+  make $5_lte_defconfig
   rm .config_LTE -f
   cp .config .config_LTE
   echo
@@ -113,18 +115,18 @@ if [ "$1" = "XC" ]; then
     rm .config -f
     cp .config_NORMAL .config
     rm .config_NORMAL
-    rm $2/modified_source_files/arch/arm/configs/note2core_defconfig -f
+    rm $2/modified_source_files/arch/arm/configs/$5_defconfig -f
     make xconfig -silent >/dev/null
     cp .config .config_NORMAL
-    cp .config $2/modified_source_files/arch/arm/configs/note2core_defconfig
+    cp .config $2/modified_source_files/arch/arm/configs/$5_defconfig
   else #lte
     rm .config -f
     cp .config_LTE .config
     rm .config_LTE -f
-    rm $2/modified_source_files/arch/arm/configs/note2core_lte_defconfig -f
+    rm $2/modified_source_files/arch/arm/configs/$5_lte_defconfig -f
     make xconfig -silent >/dev/null
     cp .config .config_LTE
-    cp .config $2/modified_source_files/arch/arm/configs/note2core_lte_defconfig
+    cp .config $2/modified_source_files/arch/arm/configs/$5_lte_defconfig
   fi
   exit
 fi
@@ -192,7 +194,7 @@ echo "Using .config							$3"
 # to build.  We replace the lines in the .config using "sed" as they cannot be set using
 # the "export" command
 echo -n "Set Fsync function						"
-if [ "$1" = "EX" ]; then
+if [ "$1" = "EX" -o "$1" = "AS" ]; then
     sed -ir 's/.*CONFIG_FSYNC_OFF.*/CONFIG_FSYNC_OFF=y/g' .config
     echo "Disabled"
 else #OC or STD
@@ -201,9 +203,16 @@ else #OC or STD
 fi
 
 echo -n "Set MAX CPU							"
-if [ "$1" = "EX" -o "$1" = "OC" ]; then
+if [ "$1" = "EX" -o "$1" = "OC" -o "$1" = "AS" ]; then
     sed -ir 's/.*CONFIG_OC_EIGHTEEN.*/CONFIG_OC_EIGHTEEN=y/g' .config
-    echo "1.8ghz"
+    #are we also building 1.9ghz kernel?
+    if [ "$1" = "AS" ]; then
+	sed -ir 's/.*CONFIG_OC_NINETEEN.*/CONFIG_OC_NINETEEN=y/g' .config
+	echo "1.9ghz"
+    else
+	sed -ir 's/.*CONFIG_OC_NINETEEN.*/CONFIG_OC_NINETEEN=n/g' .config
+	echo "1.8ghz"
+    fi
 else #STD
     sed -ir 's/.*CONFIG_OC_EIGHTEEN.*/CONFIG_OC_EIGHTEEN=n/g' .config
     echo "1.6ghz"
@@ -230,9 +239,9 @@ fi
 # also set custom kernel version string
 export USE_SEC_FIPS_MODE=true
 if [ "$3" = "NORMAL" ]; then
-  export LOCALVERSION="-Note2Core-v'$4'_'$1'" #eg -Note2Core_v1.05_EX
+  export LOCALVERSION="-$5-v'$4'_'$1'" #eg -$5_v1.05_EX
 else #lte
-  export LOCALVERSION="-Note2Core-v'$4'_'$1'_'$3'" #eg -Note2Core_v1.05_EX_LTE
+  export LOCALVERSION="-$5-v'$4'_'$1'_'$3'" #eg -$5_v1.05_EX_LTE
 fi
 
 # Run the compile
@@ -285,14 +294,14 @@ echo "done"
 echo -n "Make flash files						"
 if [ "$3" = "NORMAL" ]; then
   cd $2/output/kernel_out_$1/7100 >/dev/null
-  zip -r GL_Note2Core_7100_v$4_$1.zip * >/dev/null
-  tar -H ustar -cvf GL_Note2Core_7100_v$4_$1.tar boot.img >/dev/null
-  md5sum -t GL_Note2Core_7100_v$4_$1.tar >> GL_Note2Core_7100_v$4_$1.tar >/dev/null
+  zip -r $5_7100_v$4_$1.zip * >/dev/null
+  tar -H ustar -cvf $5_7100_v$4_$1.tar boot.img >/dev/null
+  md5sum -t $5_7100_v$4_$1.tar >> $5_7100_v$4_$1.tar >/dev/null
 else #lte
   cd $2/output/kernel_out_$1/7105 >/dev/null
-  zip -r GL_Note2Core_7105_v$4_$1.zip * >/dev/null
-  tar -H ustar -cvf GL_Note2Core_7105_v$4_$1.tar boot.img >/dev/null
-  md5sum -t GL_Note2Core_7105_v$4_$1.tar >> GL_Note2Core_7105_v$4_$1.tar >/dev/null
+  zip -r $5_7105_v$4_$1.zip * >/dev/null
+  tar -H ustar -cvf $5_7105_v$4_$1.tar boot.img >/dev/null
+  md5sum -t $5_7105_v$4_$1.tar >> $5_7105_v$4_$1.tar >/dev/null
   echo "done"
   echo
 fi
