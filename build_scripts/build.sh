@@ -56,16 +56,17 @@ fi
 # Running defconfig to create the default kernel configuration, then exit to menu
 if [ "$1" = "HC" ]; then
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  echo ~~~~~~~~~~~~~~~RUNNING $5 CONFIG~~~~~~~~~~~~~~~
+  echo ~~~~~~~~~~~~~~~RUNNING $3 CONFIG~~~~~~~~~~~~~~~
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   echo
   echo "Running in $3 mode"
   echo
   echo "Moving to source directory $2/source"
   echo
+  #$3 is used here as veriable for name
   cd $2/source >/dev/null
-  echo Creating $5_defconfig
-  make $5_defconfig
+  echo Creating $3_defconfig
+  make $3_defconfig
   rm .config_NORMAL -f
   cp .config .config_NORMAL
   echo
@@ -77,16 +78,17 @@ fi
 # Running defconfig to create the default LTE kernel configuration, then exit to menu
 if [ "$1" = "LT" ]; then
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  echo ~~~~~~~~~~~~~RUNNING $5 LTE CONFIG~~~~~~~~~~~~~
+  echo ~~~~~~~~~~~~~RUNNING $3 LTE CONFIG~~~~~~~~~~~~~
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   echo
   echo "Running in $3 mode"
   echo
   echo "Moving to source directory $2/source"
   echo
+  #$3 is used here as veriable for name
   cd $2/source >/dev/null
-  echo Creating $5_LTE_defconfig
-  make $5_lte_defconfig
+  echo Creating $3_LTE_defconfig
+  make $3_lte_defconfig
   rm .config_LTE -f
   cp .config .config_LTE
   echo

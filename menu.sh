@@ -54,8 +54,8 @@ while true; do
 # parameters to determine the functions it executes.
 # Parameter 1=Function  $PLACE=automatic working directory detection
 	[Dd]* ) $PLACE/build_scripts/build.sh DF $PLACE;;
-	[Nn]* ) $PLACE/build_scripts/build.sh HC $PLACE;;
-	[Ll]* ) $PLACE/build_scripts/build.sh LT $PLACE;;
+	[Nn]* ) $PLACE/build_scripts/build.sh HC $PLACE $NAME;;
+	[Ll]* ) $PLACE/build_scripts/build.sh LT $PLACE $NAME;;
 	[Xx]* ) $PLACE/build_scripts/build.sh XC $PLACE $MODE;;
 	[Ss]* ) $PLACE/build_scripts/build.sh STD $PLACE $MODE $VER $NAME;;
 	[Oo]* ) $PLACE/build_scripts/build.sh OC $PLACE $MODE $VER $NAME;;
