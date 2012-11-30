@@ -2,7 +2,7 @@
 clear
 
 # $1 = variables passed from menu.sh , and is used to control what functions of this script
-# are executed
+# are executed   .....eg EX,OC,STD, DBG etc etc
 
 # $2 = auto generated directory location for all files in the kitchen, generated from menu.sh
 
@@ -12,7 +12,7 @@ clear
 
 
 
-# MAKE CLEAN the source, then exit
+# MAKE CLEAN the source, then exit to menu
 if [ "$1" = "MC" ]; then
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   echo ~~~~~~~~~~~~~~~~~~~RUNNING MAKE CLEAN~~~~~~~~~~~~~~~~~
@@ -30,7 +30,7 @@ if [ "$1" = "MC" ]; then
 fi
 
 
-# Running defconfig to create the default kernel configuration, then exit
+# Running defconfig to create the default kernel configuration, then exit to menu
 if [ "$1" = "DF" ]; then
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   echo ~~~~~~~~~~~~~~~~~~~RUNNING DEFCONFIG~~~~~~~~~~~~~~~~~~
@@ -51,7 +51,7 @@ if [ "$1" = "DF" ]; then
   exit
 fi
 
-# Running defconfig to create the default kernel configuration, then exit
+# Running defconfig to create the default kernel configuration, then exit to menu
 if [ "$1" = "HC" ]; then
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   echo ~~~~~~~~~~~~~~~RUNNING NOTE2CORE CONFIG~~~~~~~~~~~~~~~
@@ -72,7 +72,7 @@ if [ "$1" = "HC" ]; then
   exit
 fi
 
-# Running defconfig to create the default LTE kernel configuration, then exit
+# Running defconfig to create the default LTE kernel configuration, then exit to menu
 if [ "$1" = "LT" ]; then
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   echo ~~~~~~~~~~~~~RUNNING NOTE2CORE LTE CONFIG~~~~~~~~~~~~~
@@ -94,7 +94,7 @@ if [ "$1" = "LT" ]; then
 fi
 
 
-# Running XCONFIG to create the kernel configuration, then exit
+# Running XCONFIG to create the kernel configuration, then exit to menu
 if [ "$1" = "XC" ]; then
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   echo ~~~~~~~~~~~~~~~~~~~~RUNNING XCONFIG~~~~~~~~~~~~~~~~~~~
@@ -106,15 +106,9 @@ if [ "$1" = "XC" ]; then
   cd $2/source >/dev/null
   echo
   echo Launching xconfig.....
-  if [ "$3" = "LTE" ]; then
-    rm .config -f
-    cp .config_LTE .config
-    rm .config_LTE -f
-    rm $2/modified_source_files/arch/arm/configs/note2core_lte_defconfig -f
-    make xconfig -silent >/dev/null
-    cp .config .config_LTE
-    cp .config $2/modified_source_files/arch/arm/configs/note2core_lte_defconfig
-  fi
+  
+  # first delete whatever the current.config might be, copy the required .config_xxx to .config
+  # run xconfig, then replace all copies of .config_xxx with the new version
   if [ "$3" = "NORMAL" ]; then
     rm .config -f
     cp .config_NORMAL .config
@@ -123,15 +117,26 @@ if [ "$1" = "XC" ]; then
     make xconfig -silent >/dev/null
     cp .config .config_NORMAL
     cp .config $2/modified_source_files/arch/arm/configs/note2core_defconfig
+  else #lte
+    rm .config -f
+    cp .config_LTE .config
+    rm .config_LTE -f
+    rm $2/modified_source_files/arch/arm/configs/note2core_lte_defconfig -f
+    make xconfig -silent >/dev/null
+    cp .config .config_LTE
+    cp .config $2/modified_source_files/arch/arm/configs/note2core_lte_defconfig
   fi
   exit
 fi
 
-# DEBUG build - compile in this window, one object at a time, pause at the end, then exit 
+# DEBUG build - compile in this window, one object at a time, pause at the end, then exit to menu
 if [ "$1" = "DBG" ]; then
   echo "Building kernel in this window with a pause at the end to check build errors"
   echo "Running in $3 mode"
   echo
+  #flip to the correct .config NORMAL or LTE
+  rm .config -f
+  cp .config_$3 .config
   cd $2/source >/dev/null
   make
   echo
@@ -150,7 +155,7 @@ fi
 
 
 
-# Main section to compile the kernel 
+# Main section to compile the kernel , when either E,O,or S are pressed in menu.sh
 echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo ~~~~~~~~~~~~~~~~BUILDING THE $1 KERNEL~~~~~~~~~~~~~~~~
 echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -162,17 +167,15 @@ echo
 rm $2/zImage -f  >/dev/null
 
 if [ "$3" = "NORMAL" ]; then
-rm $2/output/kernel_out_$1/7100/*.tar -f >/dev/null 
-rm $2/output/kernel_out_$1/7100/*.zip -f >/dev/null 
-rm $2/output/kernel_out_$1/7100/*.img -f >/dev/null 
-rm -rf $2/ramdiscs/initramfs  >/dev/null
-fi
-
-if [ "$3" = "LTE" ]; then
-rm $2/output/kernel_out_$1/7105/*.tar -f >/dev/null
-rm $2/output/kernel_out_$1/7105/*.zip -f >/dev/null
-rm $2/output/kernel_out_$1/7105/*.img -f >/dev/null
-rm -rf $2/ramdiscs/initramfs5  >/dev/null
+  rm $2/output/kernel_out_$1/7100/*.tar -f >/dev/null 
+  rm $2/output/kernel_out_$1/7100/*.zip -f >/dev/null 
+  rm $2/output/kernel_out_$1/7100/*.img -f >/dev/null 
+  rm -rf $2/ramdiscs/initramfs  >/dev/null
+else #lte
+  rm $2/output/kernel_out_$1/7105/*.tar -f >/dev/null
+  rm $2/output/kernel_out_$1/7105/*.zip -f >/dev/null
+  rm $2/output/kernel_out_$1/7105/*.img -f >/dev/null
+  rm -rf $2/ramdiscs/initramfs5  >/dev/null
 fi
 
 # Move to the source directory
@@ -183,7 +186,7 @@ cd $2/source >/dev/null
 #flip to the correct .config NORMAL or LTE
 rm .config -f
 cp .config_$3 .config
-echo "Using config							$3"
+echo "Using .config							$3"
 
 # set fsync and 1.8ghz conditions in the .config depending on what kernel has been selected
 # to build.  We replace the lines in the .config using "sed" as they cannot be set using
@@ -192,31 +195,35 @@ echo -n "Set Fsync function						"
 if [ "$1" = "EX" ]; then
     sed -ir 's/.*CONFIG_FSYNC_OFF.*/CONFIG_FSYNC_OFF=y/g' .config
     echo "Disabled"
-else
+else #OC or STD
     sed -ir 's/.*CONFIG_FSYNC_OFF.*/CONFIG_FSYNC_OFF=n/g' .config
     echo "Enabled"
 fi
 
-echo -n "Set 1.8ghz							"
+echo -n "Set MAX CPU							"
 if [ "$1" = "EX" -o "$1" = "OC" ]; then
     sed -ir 's/.*CONFIG_OC_EIGHTEEN.*/CONFIG_OC_EIGHTEEN=y/g' .config
-    echo "Enabled"
-else
+    echo "1.8ghz"
+else #STD
     sed -ir 's/.*CONFIG_OC_EIGHTEEN.*/CONFIG_OC_EIGHTEEN=n/g' .config
-    echo "Disabled"
+    echo "1.6ghz"
 fi
 
 # Create a working copy of the initramfs
 echo -n "Create a working copy of the initramfs				"
-mkdir -p $2/ramdiscs/initramfs >/dev/null
-rm -rf $2/ramdiscs/initramfs/*  >/dev/null
-mkdir -p $2/ramdiscs/initramfs5 >/dev/null
-rm -rf $2/ramdiscs/initramfs5/*  >/dev/null
-cp -R $2/ramdiscs/initramfs_n7100/* $2/ramdiscs/initramfs  >/dev/null
-cp -R $2/ramdiscs/initramfs_n7105/* $2/ramdiscs/initramfs5  >/dev/null
-chmod -R g-w $2/ramdiscs/initramfs/*  >/dev/null
-chmod -R g-w $2/ramdiscs/initramfs5/*  >/dev/null
-echo "done"
+if [ "$3" = "NORMAL" ]; then
+  mkdir -p $2/ramdiscs/initramfs >/dev/null
+  rm -rf $2/ramdiscs/initramfs/*  >/dev/null
+  cp -R $2/ramdiscs/initramfs_n7100/* $2/ramdiscs/initramfs  >/dev/null
+  chmod -R g-w $2/ramdiscs/initramfs/*  >/dev/null
+  echo "done"
+else #lte
+  mkdir -p $2/ramdiscs/initramfs5 >/dev/null
+  rm -rf $2/ramdiscs/initramfs5/*  >/dev/null
+  cp -R $2/ramdiscs/initramfs_n7105/* $2/ramdiscs/initramfs5  >/dev/null
+  chmod -R g-w $2/ramdiscs/initramfs5/*  >/dev/null
+  echo "done"
+fi
 
 
 # Enable FIPS mode, required otherwise the kernel will not boot
@@ -224,8 +231,7 @@ echo "done"
 export USE_SEC_FIPS_MODE=true
 if [ "$3" = "NORMAL" ]; then
   export LOCALVERSION="-Note2Core-v'$4'_'$1'" #eg -Note2Core_v1.05_EX
-fi
-if [ "$3" = "LTE" ]; then
+else #lte
   export LOCALVERSION="-Note2Core-v'$4'_'$1'_'$3'" #eg -Note2Core_v1.05_EX_LTE
 fi
 
@@ -237,8 +243,11 @@ echo "done"
 # Copy modules to working initramfs
 echo "Copy compiled modules and make ramdisk cpio			"
 echo
-find -name '*.ko' -exec cp -av {} $2/ramdiscs/initramfs/lib/modules/ \;  >/dev/null
-find -name '*.ko' -exec cp -av {} $2/ramdiscs/initramfs5/lib/modules/ \;  >/dev/null
+if [ "$3" = "NORMAL" ]; then
+  find -name '*.ko' -exec cp -av {} $2/ramdiscs/initramfs/lib/modules/ \;  >/dev/null
+else #lte
+  find -name '*.ko' -exec cp -av {} $2/ramdiscs/initramfs5/lib/modules/ \;  >/dev/null
+fi
 
 # build the initramfs .cpio's
 if [ "$3" = "NORMAL" ]; then
@@ -247,9 +256,7 @@ if [ "$3" = "NORMAL" ]; then
   ls -lh initramfs.cpio >/dev/null
   gzip -9 initramfs.cpio >/dev/null
   sleep 2
-fi
-
-if [ "$3" = "LTE" ]; then
+else #lte
   cd $2/ramdiscs/initramfs5
   find | fakeroot cpio -H newc -o > $2/ramdiscs/initramfs5/initramfs5.cpio
   ls -lh initramfs5.cpio >/dev/null
@@ -269,8 +276,7 @@ echo -n "Create the boot.img						"
 cp $2/source/arch/arm/boot/zImage $2/zImage  >/dev/null
 if [ "$3" = "NORMAL" ]; then
     $2/build_scripts/mkbootimg --kernel $2/zImage --ramdisk $2/ramdiscs/initramfs/initramfs.cpio.gz --board smdk4x12 --base 0x10000000 --pagesize 2048 --ramdiskaddr 0x11000000 -o $2/output/kernel_out_$1/7100/boot.img >/dev/null
-fi
-if [ "$3" = "LTE" ]; then
+else #lte
     $2/build_scripts/mkbootimg --kernel $2/zImage --ramdisk $2/ramdiscs/initramfs5/initramfs5.cpio.gz --board smdk4x12 --base 0x10000000 --pagesize 2048 --ramdiskaddr 0x11000000 -o $2/output/kernel_out_$1/7105/boot.img >/dev/null
 fi
 echo "done"
@@ -282,9 +288,7 @@ if [ "$3" = "NORMAL" ]; then
   zip -r GL_Note2Core_7100_v$4_$1.zip * >/dev/null
   tar -H ustar -cvf GL_Note2Core_7100_v$4_$1.tar boot.img >/dev/null
   md5sum -t GL_Note2Core_7100_v$4_$1.tar >> GL_Note2Core_7100_v$4_$1.tar >/dev/null
-fi
-
-if [ "$3" = "LTE" ]; then
+else #lte
   cd $2/output/kernel_out_$1/7105 >/dev/null
   zip -r GL_Note2Core_7105_v$4_$1.zip * >/dev/null
   tar -H ustar -cvf GL_Note2Core_7105_v$4_$1.tar boot.img >/dev/null

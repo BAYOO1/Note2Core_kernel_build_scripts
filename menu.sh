@@ -2,7 +2,11 @@
 
 #create working directory variable - automatic - will detect whatever directory you are currently in
 PLACE=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
+
+#set compile mode (Normal or LTE, normal is default)
 MODE="NORMAL"
+
+#read current kernel build version from version.txt
 VER=$(head -n 1 $PLACE/build_scripts/version.txt)
 
 
@@ -11,7 +15,7 @@ while true; do
     VER=$(head -n 1 $PLACE/build_scripts/version.txt)
     clear
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-    echo "~~~Note2Core kernel Autobuilder v6.3~~~"
+    echo "~~~Note2Core kernel Autobuilder v6.4~~~"
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     echo "Build version v$VER"
     echo "Operational mode for compile - $MODE"
@@ -55,6 +59,6 @@ while true; do
 	[Ff]* ) if [ "$MODE" = "NORMAL" ]; then MODE="LTE" ;else MODE="NORMAL"; fi;;
 	[Vv]* ) $PLACE/build_scripts/ver.sh $PLACE $VER;;
         [Qq]* ) exit;;
-        * ) echo "Please answer d,p,x,o,s,d,m or q.";;
+        * ) echo ".";;
     esac
 done
