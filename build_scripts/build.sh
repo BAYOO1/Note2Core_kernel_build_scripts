@@ -113,22 +113,24 @@ if [ "$1" = "XC" ]; then
   
   # first delete whatever the current.config might be, copy the required .config_xxx to .config
   # run xconfig, then replace all copies of .config_xxx with the new version
+  
+  # $4 is name here
   if [ "$3" = "NORMAL" ]; then
     rm .config -f
     cp .config_NORMAL .config
     rm .config_NORMAL
-    rm $2/modified_source_files/arch/arm/configs/$5_defconfig -f
+    rm $2/source/arch/arm/configs/$4_defconfig -f
     make xconfig -silent >/dev/null
     cp .config .config_NORMAL
-    cp .config $2/modified_source_files/arch/arm/configs/$5_defconfig
+    cp .config $2/source/arch/arm/configs/$4_defconfig
   else #lte
     rm .config -f
     cp .config_LTE .config
     rm .config_LTE -f
-    rm $2/modified_source_files/arch/arm/configs/$5_lte_defconfig -f
+    rm $2/source/arch/arm/configs/$4_lte_defconfig -f
     make xconfig -silent >/dev/null
     cp .config .config_LTE
-    cp .config $2/modified_source_files/arch/arm/configs/$5_lte_defconfig
+    cp .config $2/source/arch/arm/configs/$4_lte_defconfig
   fi
   exit
 fi
@@ -259,7 +261,7 @@ fi
 
 # Run the compile
 echo -n "Compiling kernel						"
-xterm -e nice -n 10 make -j2
+xterm -e nice -n 10 make -j5
 echo "done"
 
 # Copy modules to working initramfs
@@ -290,7 +292,7 @@ echo
 # Recompile just the zImage
 echo -n "Re-Compiling zImage						"
 cd $2/source  >/dev/null
-nice -n 10 make -j2 zImage >/dev/null
+nice -n 10 make -j5 zImage >/dev/null
 echo "done"
 
 # Create the boot.img with the zImage and initramfs ramdisk cpio archive

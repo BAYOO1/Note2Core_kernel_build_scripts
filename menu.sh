@@ -56,7 +56,7 @@ while true; do
 	[Dd]* ) $PLACE/build_scripts/build.sh DF $PLACE;;
 	[Nn]* ) $PLACE/build_scripts/build.sh HC $PLACE $NAME;;
 	[Ll]* ) $PLACE/build_scripts/build.sh LT $PLACE $NAME;;
-	[Xx]* ) $PLACE/build_scripts/build.sh XC $PLACE $MODE;;
+	[Xx]* ) $PLACE/build_scripts/build.sh XC $PLACE $MODE $NAME;;
 	[Ss]* ) $PLACE/build_scripts/build.sh STD $PLACE $MODE $VER $NAME;;
 	[Oo]* ) $PLACE/build_scripts/build.sh OC $PLACE $MODE $VER $NAME;;
 	[Ee]* ) $PLACE/build_scripts/build.sh EX $PLACE $MODE $VER $NAME;;
