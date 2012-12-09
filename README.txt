@@ -55,7 +55,7 @@ Stage 3)
 
 In terminal, in your KBUILD folder, now run this command
 
-"git clone https://github.com/glewarne/Note2Core-GT-N710x_Kernel.git"
+"git clone https://github.com/glewarne/Note2Core_v2_GT_N710x_Kernel.git"
 
 This will take a while, depending on your connection speed.  Once complete, simply rename the new folder "source"
 
