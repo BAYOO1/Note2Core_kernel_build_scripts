@@ -3,8 +3,8 @@
 #create working directory variable - automatic - will detect whatever directory you are currently in
 PLACE=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
-#set compile mode (Normal or LTE, normal is default)
-MODE="NORMAL"
+#read compile mode from mode.txt
+MODE=$(head -n 1 $PLACE/build_scripts/mode.txt)
 
 #read current kernel build version from version.txt
 VER=$(head -n 1 $PLACE/build_scripts/version.txt)
@@ -15,6 +15,7 @@ NAME=$(head -n 1 $PLACE/build_scripts/name.txt)
 while true; do
     VER=$(head -n 1 $PLACE/build_scripts/version.txt)
     NAME=$(head -n 1 $PLACE/build_scripts/name.txt)
+    MODE=$(head -n 1 $PLACE/build_scripts/mode.txt)
     clear
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     echo "~~~$NAME kernel Autobuilder v7.2~~~"
@@ -63,7 +64,7 @@ while true; do
 	[Aa]* ) $PLACE/build_scripts/build.sh AS $PLACE $MODE $VER $NAME;;
 	[Bb]* ) $PLACE/build_scripts/build.sh DBG $PLACE $MODE;;
 	[Cc]* ) $PLACE/build_scripts/build.sh MC $PLACE;;
-	[Ff]* ) if [ "$MODE" = "NORMAL" ]; then MODE="LTE" ;else MODE="NORMAL"; fi;;
+	[Ff]* ) if [ "$MODE" = "NORMAL" ]; then MODE="LTE"; echo "LTE">$PLACE/build_scripts/mode.txt;else MODE="NORMAL"; echo "NORMAL">$PLACE/build_scripts/mode.txt; fi;;
 	[Vv]* ) $PLACE/build_scripts/ver.sh $PLACE $VER;;
 	[Mm]* ) $PLACE/build_scripts/name.sh $PLACE $NAME;;
         [Qq]* ) exit;;
