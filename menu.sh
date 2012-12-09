@@ -17,7 +17,7 @@ while true; do
     NAME=$(head -n 1 $PLACE/build_scripts/name.txt)
     clear
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-    echo "~~~$NAME kernel Autobuilder v7.1~~~"
+    echo "~~~$NAME kernel Autobuilder v7.2~~~"
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     echo "Build version v$VER"
     echo "Kernel Name $NAME"

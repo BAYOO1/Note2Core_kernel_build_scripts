@@ -140,10 +140,10 @@ if [ "$1" = "DBG" ]; then
   echo "Building kernel in this window with a pause at the end to check build errors"
   echo "Running in $3 mode"
   echo
+  cd $2/source >/dev/null
   #flip to the correct .config NORMAL or LTE
   rm .config -f
   cp .config_$3 .config
-  cd $2/source >/dev/null
   make
   echo
   echo "Press enter to return to the menu"
