@@ -23,7 +23,7 @@ if [ "$1" = "MC" ]; then
   echo -n "Running Make Clean in the $2/source directory		"
   echo
   cd $2/source >/dev/null
-  make clean >/dev/null
+  make clean -j4 >/dev/null
   make mrproper >/dev/null
   echo
   echo "Done"
@@ -120,7 +120,7 @@ if [ "$1" = "XC" ]; then
     cp .config_NORMAL .config
     rm .config_NORMAL
     rm $2/source/arch/arm/configs/$4_defconfig -f
-    make xconfig -silent >/dev/null
+    make xconfig -j4 -silent >/dev/null
     cp .config .config_NORMAL
     cp .config $2/source/arch/arm/configs/$4_defconfig
   else #lte
@@ -128,7 +128,7 @@ if [ "$1" = "XC" ]; then
     cp .config_LTE .config
     rm .config_LTE -f
     rm $2/source/arch/arm/configs/$4_lte_defconfig -f
-    make xconfig -silent >/dev/null
+    make xconfig -j4 -silent >/dev/null
     cp .config .config_LTE
     cp .config $2/source/arch/arm/configs/$4_lte_defconfig
   fi
@@ -261,7 +261,7 @@ fi
 
 # Run the compile
 echo -n "Compiling kernel						"
-xterm -e nice -n 10 make -j5
+xterm -e nice -n 10 make -j4
 echo "done"
 
 # Copy modules to working initramfs
@@ -292,7 +292,7 @@ echo
 # Recompile just the zImage
 echo -n "Re-Compiling zImage						"
 cd $2/source  >/dev/null
-nice -n 10 make -j5 zImage >/dev/null
+nice -n 10 make -j4 zImage >/dev/null
 echo "done"
 
 # Create the boot.img with the zImage and initramfs ramdisk cpio archive
