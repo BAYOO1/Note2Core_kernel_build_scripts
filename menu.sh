@@ -3,14 +3,6 @@
 #create working directory variable - automatic - will detect whatever directory you are currently in
 PLACE=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
-#read compile mode from mode.txt
-MODE=$(head -n 1 $PLACE/build_scripts/mode.txt)
-
-#read current kernel build version from version.txt
-VER=$(head -n 1 $PLACE/build_scripts/version.txt)
-#read current kernel name from name.txt
-NAME=$(head -n 1 $PLACE/build_scripts/name.txt)
-
 #menu options and what we do with them
 while true; do
     VER=$(head -n 1 $PLACE/build_scripts/version.txt)
@@ -20,9 +12,9 @@ while true; do
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     echo "~~~$NAME kernel Autobuilder v7.2~~~"
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-    echo "Build version v$VER"
-    echo "Kernel Name $NAME"
-    echo "Operational mode for compile - $MODE"
+    echo "Build version			v$VER"
+    echo "Kernel Name			$NAME"
+    echo "Operational mode for compile	$MODE"
     echo
     echo "Working directory = $PLACE"
     echo 
@@ -40,7 +32,7 @@ while true; do
     echo "  S			Compile STD kernel 		(1.6ghz fsync on) $MODE"
     echo "  O			Compile OC kernel 		(1.8ghz fsync on) $MODE"
     echo "  E			Compile EX kernel		(1.8ghz fsync off) $MODE"
-    echo "  A			Compile AS Kernel		(1.9ghz fsync off) $MODE"
+    echo "  A			Compile AS Kernel		(1.99ghz fsync off) $MODE"
     echo
     echo "  B			Bug-finding compile"
     echo
