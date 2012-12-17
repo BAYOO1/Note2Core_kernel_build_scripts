@@ -32,7 +32,7 @@ while true; do
     echo "  S			Compile STD kernel 		(1.6ghz fsync on) $MODE"
     echo "  O			Compile OC kernel 		(1.8ghz fsync on) $MODE"
     echo "  E			Compile EX kernel		(1.8ghz fsync off) $MODE"
-    echo "  A			Compile AS Kernel		(1.99ghz fsync off) $MODE"
+    echo "  A			Compile AS Kernel		(1.9+ghz fsync off) $MODE"
     echo
     echo "  B			Bug-finding compile"
     echo
