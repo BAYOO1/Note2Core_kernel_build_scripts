@@ -160,14 +160,14 @@ fi
 
 # check the configs are present
 if [ -e "$2/source/.config_LTE" ]; then
-	ERR="OK"
+	ER="OK"
 else
 	echo
 	echo "Missing LTE config, run option L from the menu"
 	ERR="ERR"
 fi
 if [ -e "$2/source/.config_NORMAL" ]; then
-	ERR="OK"
+	ER="OK"
 else
 	echo
 	echo "Missing NORMAL config, run option N from the menu"
