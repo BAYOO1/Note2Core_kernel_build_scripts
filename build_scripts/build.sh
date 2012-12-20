@@ -23,7 +23,7 @@ if [ "$1" = "MC" ]; then
   echo -n "Running Make Clean in the $2/source directory		"
   echo
   cd $2/source >/dev/null
-  make clean -j4 >/dev/null
+  make clean -j3 >/dev/null
   make mrproper >/dev/null
   echo
   echo "Done"
@@ -120,7 +120,7 @@ if [ "$1" = "XC" ]; then
     cp .config_NORMAL .config
     rm .config_NORMAL
     rm $2/source/arch/arm/configs/$4_defconfig -f
-    make xconfig -j4 -silent >/dev/null
+    make xconfig -j3 -silent >/dev/null
     cp .config .config_NORMAL
     cp .config $2/source/arch/arm/configs/$4_defconfig
   else #lte
@@ -128,7 +128,7 @@ if [ "$1" = "XC" ]; then
     cp .config_LTE .config
     rm .config_LTE -f
     rm $2/source/arch/arm/configs/$4_lte_defconfig -f
-    make xconfig -j4 -silent >/dev/null
+    make xconfig -j3 -silent >/dev/null
     cp .config .config_LTE
     cp .config $2/source/arch/arm/configs/$4_lte_defconfig
   fi
@@ -158,7 +158,27 @@ fi
 #######
 #######
 
-
+# check the configs are present
+if [ -e "$2/source/.config_LTE" ]; then
+	ERR="OK"
+else
+	echo
+	echo "Missing LTE config, run option L from the menu"
+	ERR="ERR"
+fi
+if [ -e "$2/source/.config_NORMAL" ]; then
+	ERR="OK"
+else
+	echo
+	echo "Missing NORMAL config, run option N from the menu"
+	ERR="ERR"
+fi
+if [ "$ERR" = "ERR" ]; then
+	echo
+	echo "press any key to return to the menu"
+	read e
+	exit
+fi
 
 
 # Main section to compile the kernel , when either E,O,or S are pressed in menu.sh
@@ -261,7 +281,7 @@ fi
 
 # Run the compile
 echo -n "Compiling kernel						"
-xterm -e nice -n 10 make -j4
+xterm -e nice -n 10 make -j3
 echo "done"
 
 # Copy modules to working initramfs
@@ -292,7 +312,7 @@ echo
 # Recompile just the zImage
 echo -n "Re-Compiling zImage						"
 cd $2/source  >/dev/null
-nice -n 10 make -j4 zImage >/dev/null
+nice -n 10 make -j3 zImage >/dev/null
 echo "done"
 
 # Create the boot.img with the zImage and initramfs ramdisk cpio archive
@@ -312,13 +332,19 @@ if [ "$3" = "NORMAL" ]; then
   zip -r $5_7100_v$4_$1.zip * >/dev/null
   tar -H ustar -cvf $5_7100_v$4_$1.tar boot.img >/dev/null
   md5sum -t $5_7100_v$4_$1.tar >> $5_7100_v$4_$1.tar >/dev/null
+  rm  $2/upload/7100/CWM-ZIPS/$5_7100_v$4_$1.zip -f
+  rm  $2/upload/7100/ODIN-TAR/$5_7100_v$4_$1.tar -f
+  cp $5_7100_v$4_$1.zip $2/upload/7100/CWM-ZIPS/
+  cp $5_7100_v$4_$1.tar $2/upload/7100/ODIN-TAR/
 else #lte
   cd $2/output/kernel_out_$1/7105 >/dev/null
   zip -r $5_7105_v$4_$1.zip * >/dev/null
   tar -H ustar -cvf $5_7105_v$4_$1.tar boot.img >/dev/null
   md5sum -t $5_7105_v$4_$1.tar >> $5_7105_v$4_$1.tar >/dev/null
-  echo "done"
-  echo
+  rm $2/upload/7105/CWM-ZIPS/$5_7105_v$4_$1.zip -f
+  rm $2/upload/7105/ODIN-TAR/$5_7105_v$4_$1.tar -f
+  cp $5_7105_v$4_$.zip $2/upload/7105/CWM-ZIPS/
+  cp $5_7105_v$4_$.tar $2/upload/7105/ODIN-TAR/
 fi
 echo "done"
 echo
