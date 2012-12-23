@@ -343,8 +343,8 @@ else #lte
   md5sum -t $5_7105_v$4_$1.tar >> $5_7105_v$4_$1.tar >/dev/null
   rm $2/upload/7105/CWM-ZIPS/$5_7105_v$4_$1.zip -f
   rm $2/upload/7105/ODIN-TAR/$5_7105_v$4_$1.tar -f
-  cp $5_7105_v$4_$.zip $2/upload/7105/CWM-ZIPS/
-  cp $5_7105_v$4_$.tar $2/upload/7105/ODIN-TAR/
+  cp $5_7105_v$4_$1.zip $2/upload/7105/CWM-ZIPS/
+  cp $5_7105_v$4_$1.tar $2/upload/7105/ODIN-TAR/
 fi
 echo "done"
 echo
