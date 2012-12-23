@@ -281,7 +281,7 @@ fi
 
 # Run the compile
 echo -n "Compiling kernel						"
-xterm -e nice -n 10 make -j3
+xterm -e make -j5
 echo "done"
 
 # Copy modules to working initramfs
@@ -312,7 +312,7 @@ echo
 # Recompile just the zImage
 echo -n "Re-Compiling zImage						"
 cd $2/source  >/dev/null
-nice -n 10 make -j3 zImage >/dev/null
+nice make -j5 zImage >/dev/null
 echo "done"
 
 # Create the boot.img with the zImage and initramfs ramdisk cpio archive
