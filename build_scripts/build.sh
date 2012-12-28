@@ -14,22 +14,10 @@ clear
 
 
 
-# MAKE CLEAN the source, then exit to menu
-if [ "$1" = "MC" ]; then
-  echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  echo ~~~~~~~~~~~~~~~~~~~RUNNING MAKE CLEAN~~~~~~~~~~~~~~~~~
-  echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  echo
-  echo -n "Running Make Clean in the $2/source directory		"
-  echo
-  cd $2/source >/dev/null
-  make clean -j3 >/dev/null
-  make mrproper >/dev/null
-  echo
-  echo "Done"
-  sleep 3
-  exit
-fi
+
+
+
+
 
 
 # Running defconfig to create the default kernel configuration, then exit to menu
@@ -53,7 +41,8 @@ if [ "$1" = "DF" ]; then
   exit
 fi
 
-# Running defconfig to create the default kernel configuration, then exit to menu
+
+# Running defconfig to create the non-LTE configuration, then exit to menu
 if [ "$1" = "HC" ]; then
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   echo ~~~~~~~~~~~~~~~RUNNING $3 CONFIG~~~~~~~~~~~~~~~
@@ -75,7 +64,7 @@ if [ "$1" = "HC" ]; then
   exit
 fi
 
-# Running defconfig to create the default LTE kernel configuration, then exit to menu
+# Running defconfig to create the LTE configuration, then exit to menu
 if [ "$1" = "LT" ]; then
   echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   echo ~~~~~~~~~~~~~RUNNING $3 LTE CONFIG~~~~~~~~~~~~~
@@ -96,6 +85,48 @@ if [ "$1" = "LT" ]; then
   sleep 3
   exit
 fi
+
+# check the configs are present
+if [ -e "$2/source/.config_LTE" ]; then
+	ER="OK"
+else
+	echo
+	echo "Missing LTE config, run option L from the menu"
+	ERR="ERR"
+fi
+if [ -e "$2/source/.config_NORMAL" ]; then
+	ER="OK"
+else
+	echo
+	echo "Missing NORMAL config, run option N from the menu"
+	ERR="ERR"
+fi
+if [ "$ERR" = "ERR" ]; then
+	echo
+	echo "press any key to return to the menu"
+	read e
+	exit
+fi
+
+
+# MAKE CLEAN the source, then exit to menu
+if [ "$1" = "MC" ]; then
+  echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  echo ~~~~~~~~~~~~~~~~~~~RUNNING MAKE CLEAN~~~~~~~~~~~~~~~~~
+  echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  echo
+  echo -n "Running Make Clean in the $2/source directory		"
+  echo
+  cd $2/source >/dev/null
+  make clean -j3 >/dev/null
+  make mrproper >/dev/null
+  echo
+  echo "Done"
+  sleep 3
+  exit
+fi
+
+
 
 
 # Running XCONFIG to create the kernel configuration, then exit to menu
@@ -158,7 +189,7 @@ fi
 #######
 #######
 
-# check the configs are present
+# check the configs are present again
 if [ -e "$2/source/.config_LTE" ]; then
 	ER="OK"
 else
@@ -296,13 +327,13 @@ fi
 # build the initramfs .cpio's
 if [ "$3" = "NORMAL" ]; then
   cd $2/ramdiscs/initramfs
-  find | fakeroot cpio -H newc -o > $2/ramdiscs/initramfs/initramfs.cpio
+  find | cpio -H newc -o > $2/ramdiscs/initramfs/initramfs.cpio
   ls -lh initramfs.cpio >/dev/null
   gzip -9 initramfs.cpio >/dev/null
   sleep 2
 else #lte
   cd $2/ramdiscs/initramfs5
-  find | fakeroot cpio -H newc -o > $2/ramdiscs/initramfs5/initramfs5.cpio
+  find | cpio -H newc -o > $2/ramdiscs/initramfs5/initramfs5.cpio
   ls -lh initramfs5.cpio >/dev/null
   gzip -9 initramfs5.cpio >/dev/null
   sleep 2
