@@ -17,6 +17,7 @@ while true; do
     echo "Operational mode for compile	$MODE"
     echo
     echo "Working directory = $PLACE"
+    echo "Source directory  = $PLACE/source"
     echo 
     echo "OPTION			FUNCTION"
     echo
