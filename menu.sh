@@ -10,7 +10,7 @@ while true; do
     MODE=$(head -n 1 $PLACE/build_scripts/mode.txt)
     clear
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-    echo "~~~$NAME kernel Autobuilder v8.0~~~"
+    echo "~~~$NAME kernel Autobuilder v8.1~~~"
     echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     echo "Build version			v$VER"
     echo "Kernel Name			$NAME"

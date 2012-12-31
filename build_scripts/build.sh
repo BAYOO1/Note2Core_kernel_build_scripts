@@ -316,34 +316,25 @@ xterm -e make -j5
 echo "done"
 
 # Copy modules to working initramfs
-echo "Copy compiled modules and make ramdisk cpio			"
-echo
+echo -n "Copy compiled modules						"
 if [ "$3" = "NORMAL" ]; then
   find -name '*.ko' -exec cp -av {} $2/ramdiscs/initramfs/lib/modules/ \;  >/dev/null
 else #lte
   find -name '*.ko' -exec cp -av {} $2/ramdiscs/initramfs5/lib/modules/ \;  >/dev/null
 fi
+echo "done"
 
+echo -n "Create initramfs cpio						"
 # build the initramfs .cpio's
 if [ "$3" = "NORMAL" ]; then
   cd $2/ramdiscs/initramfs
-  find | cpio -H newc -o > $2/ramdiscs/initramfs/initramfs.cpio
-  ls -lh initramfs.cpio >/dev/null
+  find | cpio -H newc -o --quiet --file=$2/ramdiscs/initramfs/initramfs.cpio 2>/dev/null
   gzip -9 initramfs.cpio >/dev/null
-  sleep 2
 else #lte
   cd $2/ramdiscs/initramfs5
-  find | cpio -H newc -o > $2/ramdiscs/initramfs5/initramfs5.cpio
-  ls -lh initramfs5.cpio >/dev/null
+  find | cpio -H newc -o --quiet --file=$2/ramdiscs/initramfs/initramfs5.cpio 2>/dev/null
   gzip -9 initramfs5.cpio >/dev/null
-  sleep 2
 fi
-echo
-
-# Recompile just the zImage
-echo -n "Re-Compiling zImage						"
-cd $2/source  >/dev/null
-nice make -j5 zImage >/dev/null
 echo "done"
 
 # Create the boot.img with the zImage and initramfs ramdisk cpio archive
