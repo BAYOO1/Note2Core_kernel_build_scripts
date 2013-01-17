@@ -332,7 +332,7 @@ if [ "$3" = "NORMAL" ]; then
   gzip -9 initramfs.cpio >/dev/null
 else #lte
   cd $2/ramdiscs/initramfs5
-  find | cpio -H newc -o --quiet --file=$2/ramdiscs/initramfs/initramfs5.cpio 2>/dev/null
+  find | cpio -H newc -o --quiet --file=$2/ramdiscs/initramfs5/initramfs5.cpio 2>/dev/null
   gzip -9 initramfs5.cpio >/dev/null
 fi
 echo "done"
